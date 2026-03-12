@@ -21,6 +21,17 @@
       </section>
 
       <section>
+        <h4>Método de anonimización</h4>
+        <label><input type="radio" name="mode" value="replace" id="modeReplace" /> Reemplazar texto (ej: XXXXX)</label>
+        <br />
+        <label><input type="radio" name="mode" value="blur" id="modeBlur" /> Difuminar (blur)</label>
+        <div id="blurOptions" style="margin-left:20px; display:none;">
+          <label>Intensidad de blur (px): <input id="blurAmount" type="number" min="1" max="40" value="6" /></label>
+        </div>
+
+      </section>
+
+      <section>
         <h4>Reemplazos</h4>
         <div>
           <label>Teléfono por: <input id="phoneReplacement" type="text" /></label>

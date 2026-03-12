@@ -4,26 +4,46 @@ const phoneReplacement = document.getElementById('phoneReplacement');
 const emailReplacement = document.getElementById('emailReplacement');
 const saveBtn = document.getElementById('saveBtn');
 const exportBtn = document.getElementById('exportBtn');
+const modeReplace = document.getElementById('modeReplace');
+const modeBlur = document.getElementById('modeBlur');
+const blurOptions = document.getElementById('blurOptions');
+const blurAmount = document.getElementById('blurAmount');
+
+function updateBlurUI() {
+  if (modeBlur.checked) blurOptions.style.display = 'block';
+  else blurOptions.style.display = 'none';
+}
 
 chrome.storage.local.get(['globalPatterns'], (res) => {
   const p = res.globalPatterns || {
     phone: true,
     email: true,
     phoneReplacement: 'XXXXXXXX',
-    emailReplacement: 'xxxxx@xxxxx'
+    emailReplacement: 'xxxxx@xxxxx',
+    mode: 'replace',
+    blurAmount: 6
   };
   patternPhone.checked = !!p.phone;
   patternEmail.checked = !!p.email;
   phoneReplacement.value = p.phoneReplacement || 'XXXXXXXX';
   emailReplacement.value = p.emailReplacement || 'xxxxx@xxxxx';
+  if (p.mode === 'blur') modeBlur.checked = true;
+  else modeReplace.checked = true;
+  blurAmount.value = p.blurAmount || 6;
+  updateBlurUI();
 });
+
+modeReplace.addEventListener('change', updateBlurUI);
+modeBlur.addEventListener('change', updateBlurUI);
 
 saveBtn.addEventListener('click', () => {
   const p = {
     phone: !!patternPhone.checked,
     email: !!patternEmail.checked,
     phoneReplacement: phoneReplacement.value || 'XXXXXXXX',
-    emailReplacement: emailReplacement.value || 'xxxxx@xxxxx'
+    emailReplacement: emailReplacement.value || 'xxxxx@xxxxx',
+    mode: modeBlur.checked ? 'blur' : 'replace',
+    blurAmount: Number(blurAmount.value) || 6
   };
   chrome.storage.local.set({ globalPatterns: p }, () => {
     alert('Guardado');
