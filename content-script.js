@@ -6,6 +6,7 @@
 
   let enabledForSite = false;
   let mutationObserver = null;
+  const replacedNodes = new WeakMap();
 
   function isEditable(node) {
     if (!node) return false;
@@ -27,56 +28,21 @@
     return false;
   }
 
-  function escapeHtml(text) {
-    return text.replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
-  function createReplacedSpan(originalText, contentHTML, isReplaceMode) {
-    const wrapper = document.createElement('span');
-    wrapper.setAttribute('data-anon-replaced', 'true');
-    wrapper.setAttribute('data-anon-original', originalText);
-    if (isReplaceMode) {
-      wrapper.textContent = contentHTML;
-    } else {
-      wrapper.innerHTML = contentHTML;
-    }
-    return wrapper;
-  }
-
   function replaceTextInNode(node, patterns) {
     if (shouldSkipTextNode(node)) return;
-    const text = node.nodeValue;
-    let isReplaceMode = (patterns.mode !== 'blur');
+    let text = node.nodeValue;
+    let newText = text;
 
-    if (isReplaceMode) {
-      let newText = text;
-      if (patterns.phone) newText = newText.replace(PHONE_REGEX, patterns.phoneReplacement);
-      if (patterns.email) newText = newText.replace(EMAIL_REGEX, patterns.emailReplacement);
-      if (newText !== text) {
-        const span = createReplacedSpan(text, newText, true);
-        node.parentNode.replaceChild(span, node);
-      }
-    } else {
-      let escaped = escapeHtml(text);
-      let changed = false;
-      const blurPx = Number(patterns.blurAmount) || 6;
-      const blurWrapper = (match) => {
-        changed = true;
-        const enc = encodeURIComponent(match);
-        return `<span class="anon-blur" data-anon-part="${enc}" style="filter: blur(${blurPx}px); -webkit-filter: blur(${blurPx}px); display:inline-block;">${escapeHtml(match)}</span>`;
-      };
+    if (patterns.phone) newText = newText.replace(PHONE_REGEX, patterns.phoneReplacement);
+    if (patterns.email) newText = newText.replace(EMAIL_REGEX, patterns.emailReplacement);
 
-      if (patterns.phone) escaped = escaped.replace(PHONE_REGEX, blurWrapper);
-      if (patterns.email) escaped = escaped.replace(EMAIL_REGEX, blurWrapper);
-
-      if (changed) {
-        const span = createReplacedSpan(text, escaped, false);
-        node.parentNode.replaceChild(span, node);
-      }
+    if (newText !== text) {
+      const span = document.createElement('span');
+      span.setAttribute('data-anon-replaced', 'true');
+      span.setAttribute('data-anon-original', text);
+      span.textContent = newText;
+      replacedNodes.set(span, text);
+      node.parentNode.replaceChild(span, node);
     }
   }
 
@@ -94,7 +60,7 @@
     toProcess.forEach(node => replaceTextInNode(node, patterns));
   }
 
-  function revertAll() {
+    function revertAll() {
     const replaced = document.querySelectorAll('[data-anon-replaced]');
     replaced.forEach(el => {
       const original = el.getAttribute('data-anon-original');
@@ -149,9 +115,7 @@
           phone: true,
           email: true,
           phoneReplacement: 'XXXXXXXX',
-          emailReplacement: 'xxxxx@xxxxx',
-          mode: 'replace',
-          blurAmount: 6
+          emailReplacement: 'xxxxx@xxxxx'
         }, res.globalPatterns || {}, siteConfig.patterns || {});
 
         walkAndReplace(document.body, patterns);

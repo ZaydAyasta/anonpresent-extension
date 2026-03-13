@@ -1,4 +1,4 @@
-const siteToggle = document.getElementById('siteToggle');
+  const siteToggle = document.getElementById('siteToggle');
 const previewBtn = document.getElementById('previewBtn');
 const optionsLink = document.getElementById('optionsLink');
 
