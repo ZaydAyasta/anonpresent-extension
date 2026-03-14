@@ -60,7 +60,7 @@
     toProcess.forEach(node => replaceTextInNode(node, patterns));
   }
 
-    function revertAll() {
+  function revertAll() {
     const replaced = document.querySelectorAll('[data-anon-replaced]');
     replaced.forEach(el => {
       const original = el.getAttribute('data-anon-original');
@@ -109,6 +109,7 @@
   function applyForSite(enabled) {
     enabledForSite = !!enabled;
     if (enabledForSite) {
+      // Obtener patrones desde storage (fallback a valors por defecto)
       chrome.storage.local.get([`site:${domainKey}`, 'globalPatterns'], (res) => {
         const siteConfig = res[`site:${domainKey}`] || {};
         const patterns = Object.assign({
