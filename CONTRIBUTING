@@ -1,0 +1,8 @@
+# Contribuir a AnonPresent
+
+Gracias por querer contribuir.
+
+- Forkea el repo.
+- Crea una rama `feature/<breve-descripción>`.
+- Asegúrate que lint y tests pasen.
+- Abre PR describiendo cambios y por qué son necesarios.
