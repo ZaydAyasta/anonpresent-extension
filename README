@@ -1,0 +1,25 @@
+# AnonPresent
+
+AnonPresent es una extensión para Chromium/Chrome que anonimiza información sensible (teléfonos, emails, etc.) en páginas web para presentaciones de pantalla.
+
+**Características**
+- Toggle por sitio desde el popup.
+- Reemplazo configurable de números/emails.
+- Persistencia por dominio.
+- Modo de anonimización rápido (reemplazo de texto) — pensado para presentaciones.
+
+**Limitaciones**
+- No anonimiza textos dentro de imágenes o canvas.
+- Iframes de distinto origen no son accesibles desde la extensión.
+- No modifica inputs ni elementos `contentEditable`.
+
+## Instalación (modo desarrollador)
+1. Clona el repo: `git clone https://github.com/<tu-org>/anonpresent.git`
+2. Abre `chrome://extensions` y activa *Developer mode*.
+3. Click en *Load unpacked* y selecciona la carpeta del proyecto.
+
+## Contribuir
+Lee `CONTRIBUTING.md`. Pull requests bienvenidos.
+
+## Licencia
+MIT — Ver `LICENSE`.
